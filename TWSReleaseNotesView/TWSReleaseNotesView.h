@@ -123,6 +123,7 @@
  */
 + (BOOL)isAppOnFirstLaunch;
 
++(void)resetVersionKeyForTestingTo:(NSString *)resetKey;
 
 /** @name Showing the release notes view */
 

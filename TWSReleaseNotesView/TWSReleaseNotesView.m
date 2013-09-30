@@ -30,7 +30,7 @@ static NSString *const kTWSReleaseNotesViewVersionKey = @"com.tapwings.open.kTWS
 static const CGFloat kTWSReleaseNotesViewDefaultOverlayAlpha = 0.5f;
 static const CGFloat kTWSReleaseNotesViewDefaultTextViewBackgroundAlpha = 0.8f;
 static const CGFloat kTWSReleaseNotesViewContainerViewCornerRadius = 3.0f;
-static const CGFloat kTWSReleaseNotesViewContainerViewWidth = 280.0f;
+static const CGFloat kTWSReleaseNotesViewContainerViewWidth = 300.0f;
 static const CGFloat kTWSReleaseNotesViewContainerViewMinVerticalPadding = 60.0f;
 static const CGFloat kTWSReleaseNotesViewInnerContainerSidePadding = 6.0f;
 static const CGFloat kTWSReleaseNotesViewBlurredImageViewCornerRadius = 5.0f;
@@ -54,6 +54,7 @@ static const NSTimeInterval kTWSReleaseNotesViewTransitionDuration = 0.2f;
 @property (strong, nonatomic) UILabel *titleLabel;
 @property (strong, nonatomic) TWSUnselectableTextView *textView;
 @property (strong, nonatomic) UIButton *closeButton;
+@property (nonatomic, assign) CGFloat preferredPopupWidth;
 
 - (id)initWithReleaseNotesTitle:(NSString *)releaseNotesTitle text:(NSString *)releaseNotesText closeButtonTitle:(NSString *)closeButtonTitle;
 - (void)setupSubviews;
@@ -136,6 +137,14 @@ static const NSTimeInterval kTWSReleaseNotesViewTransitionDuration = 0.2f;
 {
     // Remove orientation change notification
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
+}
+
+-(CGFloat)preferredPopupWidth;
+{
+    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone){
+        return kTWSReleaseNotesViewContainerViewWidth;
+    }
+    return 668.0f;
 }
 
 #pragma mark - Class Methods
@@ -223,6 +232,15 @@ static const NSTimeInterval kTWSReleaseNotesViewTransitionDuration = 0.2f;
     return isFirstLaunch;
 }
 
++(void)resetVersionKeyForTestingTo:(NSString *)resetKey;
+{
+    if (nil == resetKey) {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kTWSReleaseNotesViewVersionKey];
+    } else {
+        [[NSUserDefaults standardUserDefaults] setObject:resetKey forKey:kTWSReleaseNotesViewVersionKey];
+    }
+}
+
 #pragma mark - Private Methods
 
 - (void)setupSubviews
@@ -301,7 +319,7 @@ static const NSTimeInterval kTWSReleaseNotesViewTransitionDuration = 0.2f;
     [self setFrame:containerBounds];
     
     // Calculate text view height
-    CGFloat textViewWidth = kTWSReleaseNotesViewContainerViewWidth - 2*kTWSReleaseNotesViewInnerContainerSidePadding;
+    CGFloat textViewWidth = self.preferredPopupWidth - 2*kTWSReleaseNotesViewInnerContainerSidePadding;
     CGFloat textViewContentHeight = [self expectedReleaseNotesTextHeightWithWidth:textViewWidth];
     
     // Calculate popup view vertical padding
@@ -310,7 +328,7 @@ static const NSTimeInterval kTWSReleaseNotesViewTransitionDuration = 0.2f;
     CGFloat popupViewVerticalPadding = MAX(popupViewExpectedVerticalPadding, kTWSReleaseNotesViewContainerViewMinVerticalPadding);
     
     // Popup view
-    [self.popupView setFrame:CGRectInset(containerBounds, floorf((containerBounds.size.width - kTWSReleaseNotesViewContainerViewWidth)/2.0f), popupViewVerticalPadding)];
+    [self.popupView setFrame:CGRectInset(containerBounds, floorf((containerBounds.size.width - self.preferredPopupWidth)/2.0f), popupViewVerticalPadding)];
     [self.popupView.layer setShadowPath:[[UIBezierPath bezierPathWithRect:self.popupView.bounds] CGPath]];
 
     // Background blurred image view
