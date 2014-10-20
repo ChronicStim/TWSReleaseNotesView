@@ -437,8 +437,11 @@ static const NSTimeInterval kTWSReleaseNotesViewTransitionDuration = 0.2f;
 - (CGFloat)expectedReleaseNotesTextHeightWithWidth:(CGFloat)width;
 {
     CGSize maximumLabelSize = CGSizeMake(width, MAXFLOAT);
-    CGSize expectedLabelSize = [self.releaseNotesText sizeWithFont:self.releaseNotesFont constrainedToSize:maximumLabelSize lineBreakMode:NSLineBreakByWordWrapping];
-    return expectedLabelSize.height + 2*kTWSReleaseNotesViewTextViewInsetHeight;
+    
+    NSDictionary *attrDict = @{NSFontAttributeName : self.releaseNotesFont};
+    CGSize expectedLabelSize = [self.releaseNotesText boundingRectWithSize:maximumLabelSize options:NSStringDrawingUsesLineFragmentOrigin attributes:attrDict context:nil].size;
+
+    return ceilf(expectedLabelSize.height + (2.0f * kTWSReleaseNotesViewTextViewInsetHeight));
 }
 
 - (void)closeButtonTouchedUp:(id)sender
