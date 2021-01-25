@@ -141,7 +141,7 @@ static const NSTimeInterval kTWSReleaseNotesViewTransitionDuration = 0.2f;
 
 -(CGFloat)preferredPopupWidth;
 {
-    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone){
+    if([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone){
         return kTWSReleaseNotesViewContainerViewWidth;
     }
     return 668.0f;
